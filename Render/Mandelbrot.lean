@@ -1,8 +1,8 @@
 import Interval.Box.Basic
 import Interval.Interval.Conversion
 import Ray.Dynamics.Mandelbrot
-import Ray.Render.Color
-import Ray.Render.Potential
+import Render.Color
+import Render.Potential
 
 /-!
 ## Pictures of the Mandelbrot set

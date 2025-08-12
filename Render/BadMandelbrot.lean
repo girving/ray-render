@@ -1,8 +1,8 @@
 import Interval.Box.Basic
-import Ray.Render.Grid
-import Ray.Render.Mandelbrot
-import Ray.Render.PNG
-import Ray.Render.Potential
+import Render.Grid
+import Render.Mandelbrot
+import Render.PNG
+import Render.Potential
 
 /-!
 ## Bad Mandelbrot images where each pixel corresponds to just one point

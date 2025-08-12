@@ -1,7 +1,7 @@
 import Lake
 open Lake DSL
 
-package ray where
+package render where
   leanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`linter.docPrime, false⟩,
@@ -10,30 +10,31 @@ package ray where
 
 require "leanprover-community" / "mathlib" @ git "master"
 require "girving" / "interval" @ git "main"
+require "girving" / "ray" @ git "main"
 
 @[default_target]
-lean_lib Ray
+lean_lib Render
 
 @[default_target]
 lean_exe gradient_test {
-  root := `Ray.Render.GradientTest
+  root := `Render.GradientTest
   moreLinkArgs := #["-L/opt/homebrew/lib", "-lpng"]
 }
 
 @[default_target]
 lean_exe bad_mandelbrot {
-  root := `Ray.Render.BadMandelbrot
+  root := `Render.BadMandelbrot
   moreLinkArgs := #["-L/opt/homebrew/lib", "-lpng"]
 }
 
 @[default_target]
 lean_exe primes {
-  root := `Ray.Experimental.Primes
+  root := `Render.Primes
 }
 
 target png.o pkg : System.FilePath := do
-  let o := pkg.buildDir / "Ray/Render/png.o"
-  let src ← inputTextFile <| pkg.dir / "Ray/Render/png.cc"
+  let o := pkg.buildDir / "Render/png.o"
+  let src ← inputTextFile <| pkg.dir / "Render/png.cc"
   let args := #["-I", (←getLeanIncludeDir).toString, "-I/opt/homebrew/include"]
   buildO o src args #["-fPIC"] "c++" getLeanTrace
 

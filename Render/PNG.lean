@@ -1,4 +1,4 @@
-import Ray.Render.Image
+import Render.Image
 
 /-!
 ## Write .png images via libpng

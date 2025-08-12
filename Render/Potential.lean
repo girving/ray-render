@@ -4,8 +4,8 @@ import Interval.Interval.Exp
 import Interval.Interval.Log
 import Ray.Dynamics.Mandelbrot
 import Ray.Dynamics.Multibrot.PotentialLower
-import Ray.Render.Color
-import Ray.Render.Iterate
+import Render.Color
+import Render.Iterate
 
 /-!
 ## Approximate computation of the Mandelbrot potential function

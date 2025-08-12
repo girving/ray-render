@@ -1,7 +1,7 @@
 import Interval.Misc.Array
 import Ray.Misc.Array
-import Ray.Render.Color
-import Ray.Render.Grid
+import Render.Color
+import Render.Grid
 
 /-!
 ## Images: 2D arrays of colors

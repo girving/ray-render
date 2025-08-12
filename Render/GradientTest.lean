@@ -1,4 +1,4 @@
-import Ray.Render.PNG
+import Render.PNG
 
 /-!
 ## Test image writing

@@ -252,8 +252,6 @@ def zs := i.z.normSq.hi
 -/
 end debug
 
-#exit  -- DO NOT SUBMIT: Remove once we fix that compiler bug
-
 private def good (x y : ℚ) (n : ℕ) : Bool :=
   let c : Box := .ofRat (x,y)
   (Box.potential c c n 1000).1 ≠ nan

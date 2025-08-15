@@ -18,16 +18,24 @@ lean_lib Render
 @[default_target]
 lean_lib Correct
 
+def pngLinkArgs : Array String :=
+  bif System.Platform.isOSX then
+    #["-L/opt/homebrew/lib", "-lpng"]
+  else bif System.Platform.isWindows then
+    #["-lpng"]  -- Fallback
+  else  -- Assume Linux
+    #["-L/usr/lib/x86_64-linux-gnu", "-lpng"]
+
 @[default_target]
 lean_exe gradient_test {
   root := `Render.GradientTest
-  moreLinkArgs := #["-L/opt/homebrew/lib", "-lpng"]
+  moreLinkArgs := pngLinkArgs
 }
 
 @[default_target]
 lean_exe bad_mandelbrot {
   root := `Render.BadMandelbrot
-  moreLinkArgs := #["-L/opt/homebrew/lib", "-lpng"]
+  moreLinkArgs := pngLinkArgs
 }
 
 @[default_target]
@@ -38,7 +46,7 @@ lean_exe primes {
 target png.o pkg : System.FilePath := do
   let o := pkg.buildDir / "Render/png.o"
   let src ← inputTextFile <| pkg.dir / "Render/png.cc"
-  let args := #["-I", (←getLeanIncludeDir).toString, "-I/opt/homebrew/include"]
+  let args := #["-I", (← getLeanIncludeDir).toString, "-I/opt/homebrew/include"]
   buildO o src args #["-fPIC"] "c++" getLeanTrace
 
 extern_lib libray pkg := do

@@ -16,6 +16,9 @@ require "girving" / "ray" @ git "main"
 lean_lib Render
 
 @[default_target]
+lean_lib Correct
+
+@[default_target]
 lean_exe gradient_test {
   root := `Render.GradientTest
   moreLinkArgs := #["-L/opt/homebrew/lib", "-lpng"]

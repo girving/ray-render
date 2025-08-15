@@ -1,5 +1,5 @@
 import Interval.Misc.Array
-import Ray.Misc.Array
+import Render.Array
 import Render.Color
 import Render.Grid
 

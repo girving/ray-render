@@ -225,12 +225,12 @@ noncomputable def Color.val (c : Color UInt8) : Color ℝ :=
   · rcases n with n | n; all_goals simp [n]
   rcases not_or.mp n with ⟨n0,n1⟩
   simp only [n0, not_false_eq_true, n1, true_and]
-  have mn : c.unquantize ≠ nan := by rw [←hl] at n0; exact (Floating.ne_nan_of_sub n0).1
+  have mn : c.unquantize ≠ nan := by rw [← hl] at n0; exact (Floating.ne_nan_of_sub n0).1
   by_cases g : lo.val ≤ x.lo.val ∧ x.hi.val ≤ hi.val
   · have xn : x ≠ nan := by
       contrapose g
       simp only [ne_eq, not_not] at g
-      simp only [g, lo_nan, hi_nan, Floating.val_nan_le, and_true, not_le, ←Floating.val_lt_val]
+      simp only [g, lo_nan, hi_nan, Floating.val_nan_le, and_true, not_le, ← Floating.val_lt_val]
       exact Floating.nan_lt n0
     simp only [g, and_self, ↓reduceIte, UInt8.approx_def, approx_some]
     simp only [Rat.cast_div, Rat.cast_ofNat, mem_Icc, tsub_le_iff_right, UInt8.color, add_div]
@@ -241,7 +241,7 @@ noncomputable def Color.val (c : Color UInt8) : Color ℝ :=
       have e : (color_error : ℝ) / 2 = (color_error / 2 : ℚ) := by
         simp only [Rat.cast_div, Rat.cast_ofNat]
       rw [e]; approx
-    simp only [←hl, ←hh] at n0 n1 mn g
+    simp only [← hl, ←hh] at n0 n1 mn g
     have le_lo := Floating.le_sub n0
     have le_hi := Floating.add_le n1
     simp only [UInt8.val_unquantize mn, tsub_le_iff_right, hl, hh] at le_lo le_hi g ⊢
@@ -278,7 +278,7 @@ noncomputable def Color.val (c : Color UInt8) : Color ℝ :=
         intro _
         simp only [approx] at cm; simp only [approx', mem_setOf_eq] at cm
         rcases cm with ⟨m0, m1, m2, m3⟩
-        simp only [approx', mem_setOf_eq, ←approx_some, ←hr, ←hg, ←hb, ←ha,
+        simp only [approx', mem_setOf_eq, ← approx_some, ←hr, ←hg, ←hb, ←ha,
           Interval.mem_approx_quantize, m0, m1, m2, m3, true_and]
 
 /-!
@@ -318,7 +318,7 @@ noncomputable instance : ApproxAdd (Color Interval) (Color ℝ) where
     intro a m
     simp only [mem_add] at m
     rcases m with ⟨x',xm,y',ym,e⟩
-    simp only [Color.add_def, approx, ←e] at xm ym ⊢
+    simp only [Color.add_def, approx, ← e] at xm ym ⊢
     simp only [Color.approx', mem_setOf_eq] at xm ym ⊢
     rcases xm with ⟨x0, x1, x2, x3⟩
     rcases ym with ⟨y0, y1, y2, y3⟩

@@ -28,7 +28,7 @@ lemma Interval.mem_approx_iter_sqrt {a : ℝ} {x : Interval} {n : ℕ} (ax : a �
   generalize hb : a^(2^n) = b at ax
   have ab : a = b ^ (2 ^ (-n : ℝ) : ℝ) := by
     have e : (2:ℝ)^n = (2^n : ℕ) := by norm_num
-    rw [←hb, Real.rpow_neg (by norm_num), Real.rpow_natCast, e,
+    rw [← hb, Real.rpow_neg (by norm_num), Real.rpow_natCast, e,
       Real.pow_rpow_inv_natCast a0 (pow_ne_zero _ (by norm_num))]
   rw [ab]
   exact mem_approx_iter_sqrt ax
@@ -54,7 +54,7 @@ lemma Box.approx_potential_large {c' z' : ℂ} {z : Box} (cz : ‖c'‖ ≤ ‖z
     rw [Ne, Interval.hi_eq_nan] at n
     refine le_trans (potential_error_le_of_z6 _ z6 cz) ?_
     apply Interval.le_hi n
-    rw [div_eq_mul_inv, ←Real.rpow_neg (by positivity), Real.rpow_def_of_pos (by linarith)]
+    rw [div_eq_mul_inv, ← Real.rpow_neg (by positivity), Real.rpow_def_of_pos (by linarith)]
     have e : Real.log (‖z'‖) * -1.927 = Real.log (‖z'‖ ^ 2) * -0.9635 := by
       rw [Real.log_pow, Nat.cast_two, mul_comm (2:ℝ), mul_assoc]; norm_num
     rw [e]
@@ -82,18 +82,18 @@ lemma Box.approx_potential_large {c' z' : ℂ} {z : Box} (cz : ‖c'‖ ≤ ‖z
     by_cases bad : zs = nan ∨ (16 : Floating).val < zs.hi.val ∨ (16 : Floating).val < cs.val
     · simp only [bad, ↓reduceIte, Interval.approx_nan, mem_univ]
     · simp only [bad, ↓reduceIte]
-      simp only [not_or, not_lt, ←hzs] at bad
+      simp only [not_or, not_lt, ← hzs] at bad
       rcases bad with ⟨zsn, z4, c4⟩
       rw [Floating.val_ofNat] at c4 z4
       simp only [← hcs, Nat.cast_ofNat, Interval.hi_eq_nan] at c4 z4 csn zsn
       apply Interval.mem_approx_iter_sqrt' s.potential_nonneg
-      simp only [←s.potential_eqn_iter, f_f'_iter]
+      simp only [← s.potential_eqn_iter, f_f'_iter]
       generalize hw' : (f' 2 c')^[i.n] z' = w'
       have le4 : Real.sqrt 16 ≤ 4 := by rw [Real.sqrt_le_iff]; norm_num
       apply approx_potential_small
       · exact le_trans (Box.abs_le_sqrt_normSq cm csn) (le_trans (Real.sqrt_le_sqrt c4) le4)
       · refine le_trans (Box.abs_le_sqrt_normSq ?_ zsn) (le_trans (Real.sqrt_le_sqrt z4) le4)
-        rw [←hw', ←hi]
+        rw [← hw', ←hi]
         exact mem_approx_iterate cm zm _
   · generalize hj : iterate c i.z ((r.mul r true).max (cs.max 36)) 1000 = j
     simp only
@@ -103,9 +103,9 @@ lemma Box.approx_potential_large {c' z' : ℂ} {z : Box} (cz : ‖c'‖ ≤ ‖z
     · simp only
       generalize hn : i.n + j.n = n
       apply Interval.mem_approx_iter_sqrt' s.potential_nonneg
-      simp only [←s.potential_eqn_iter, f_f'_iter, ←hj] at hje ⊢
+      simp only [← s.potential_eqn_iter, f_f'_iter, ←hj] at hje ⊢
       generalize hw' : (f' 2 c')^[n] z' = w'
-      have izm : (f' 2 c')^[i.n] z' ∈ approx i.z := by rw [←hi]; exact mem_approx_iterate cm zm _
+      have izm : (f' 2 c')^[i.n] z' ∈ approx i.z := by rw [← hi]; exact mem_approx_iterate cm zm _
       have jl := iterate_large cm izm hje
       have jrn := ne_nan_of_iterate (hje.trans_ne (by decide))
       simp only [hj, ← Function.iterate_add_apply, add_comm _ i.n, hn, hw'] at jl
@@ -121,7 +121,7 @@ lemma Box.approx_potential_large {c' z' : ℂ} {z : Box} (cz : ‖c'‖ ≤ ‖z
           simp only [Nat.cast_ofNat]
           rw [e, Real.sqrt_sq (by norm_num)]
         · simp only [norm_nonneg, Real.sqrt_sq, le_refl]
-      · rw [←hw', ←hn, add_comm _ j.n, Function.iterate_add_apply, ←hj]
+      · rw [← hw', ←hn, add_comm _ j.n, Function.iterate_add_apply, ←hj]
         exact mem_approx_iterate cm izm _
     · simp only [Interval.approx_nan, mem_univ]
   · simp only [Interval.approx_nan, mem_univ]

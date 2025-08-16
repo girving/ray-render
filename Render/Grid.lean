@@ -67,8 +67,8 @@ lemma square_dz (lo hi : ℚ × ℚ) (n : ℕ) :
   generalize hn1 : max 1 (d.1 / dx).ceil.toNat = n1
   generalize hn2 : max 1 (d.2 / dx).ceil.toNat = n2
   have n1z : (n1 : ℚ) ≠ 0 := by
-    rw [←hn1]; exact Nat.cast_ne_zero.mpr (ne_of_gt (lt_max_of_lt_left zero_lt_one))
+    rw [← hn1]; exact Nat.cast_ne_zero.mpr (ne_of_gt (lt_max_of_lt_left zero_lt_one))
   have n2z : (n2 : ℚ) ≠ 0 := by
-    rw [←hn2]; exact Nat.cast_ne_zero.mpr (ne_of_gt (lt_max_of_lt_left zero_lt_one))
+    rw [← hn2]; exact Nat.cast_ne_zero.mpr (ne_of_gt (lt_max_of_lt_left zero_lt_one))
   simp only [dz, Prod.smul_mk, smul_eq_mul, Prod.fst_add, Prod.fst_sub, add_sub_sub_cancel, add_div,
     mul_div_assoc, div_self n1z, mul_one, add_halves, Prod.snd_add, Prod.snd_sub, div_self n2z]

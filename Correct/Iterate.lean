@@ -27,7 +27,7 @@ lemma iterate'_correct {c z : Box} {rs : Floating} {c' z' : ℂ} {rs' : ℝ}
     generalize hzi2 : z.im.sqr = zi2
     generalize hz2 : zr2.lo.add zi2.lo false = z2
     generalize hw : (⟨zr2 - zi2, (z.re * z.im).scaleB 1⟩ : Box) + c = w
-    have we : w = z.sqr + c := by rw [←hw, Box.sqr, hzr2, hzi2]
+    have we : w = z.sqr + c := by rw [← hw, Box.sqr, hzr2, hzi2]
     have wa : f' 2 c' z' ∈ approx w := by rw [we, f']; approx
     generalize hw' : f' 2 c' z' = w' at wa
     by_cases z2n : z2 = nan
@@ -38,7 +38,7 @@ lemma iterate'_correct {c z : Box} {rs : Floating} {c' z' : ℂ} {rs' : ℝ}
       forall_true_left, true_and, Complex.norm_def, Real.sq_sqrt (Complex.normSq_nonneg _),
       if_false]
       refine lt_of_le_of_lt rsm (lt_of_lt_of_le rz ?_)
-      simp only [Complex.normSq_apply, ←sq, ←hz2, ←hzr2, ←hzi2] at z2n ⊢
+      simp only [Complex.normSq_apply, ← sq, ←hz2, ←hzr2, ←hzi2] at z2n ⊢
       rcases Floating.ne_nan_of_add z2n with ⟨nr, ni⟩
       simp only [ne_eq, Interval.lo_eq_nan] at nr ni
       refine le_trans (Floating.add_le z2n) (add_le_add ?_ ?_)

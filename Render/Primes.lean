@@ -28,7 +28,7 @@ def BaseIO.lazyPure {α : Type} (f : Unit → α) : BaseIO α := do
 def countIO (n : ℕ) (chunk : ℕ) : IO ℕ :=
   let tasks := (Array.range (n ⌊/⌋ chunk)).map (fun c ↦
     BaseIO.asTask (BaseIO.lazyPure (fun _ ↦ count_range (c * chunk) ((c+1) * chunk))))
-  tasks.foldlM (fun n (t : BaseIO (Task ℕ)) ↦ do pure (n + (←t).get)) 0
+  tasks.foldlM (fun n (t : BaseIO (Task ℕ)) ↦ do pure (n + (← t).get)) 0
 
 def main : IO Unit := do
   let n := 1000 * 1000 * 1000

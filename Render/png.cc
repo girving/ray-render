@@ -49,5 +49,5 @@ done:
     png_destroy_write_struct(&png, &info);
   if (file)
     fclose(file);
-  return lean_mk_string(error);
+  return lean_io_result_mk_ok(lean_mk_string(error));
 }

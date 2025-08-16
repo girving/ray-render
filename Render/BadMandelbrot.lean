@@ -11,6 +11,9 @@ This is a warmup: our real images will have each pixel corresponding to an integ
 over a square, partitioning the plain.  But these we can draw without the Koebe quarter theorem.
 -/
 
+-- Verify that we haven't pulled in `Ray` machinery
+assert_not_exists IsManifold
+
 /-- A particular grid around the Mandelbrot set -/
 def grid : Grid :=
   .square ⟨-2.6, -1.8⟩ ⟨1.3, 1.8⟩ 200 -- 2048  -- 256

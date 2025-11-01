@@ -14,40 +14,39 @@ open Set
 private local instance : Fact (2 ≤ 2) := ⟨by norm_num⟩
 
 /-- `Interval.iter_sqrt` is conservative -/
-lemma Interval.mem_approx_iter_sqrt {a : ℝ} {x : Interval} {n : ℕ} (ax : a ∈ approx x) :
-    a ^ (2 ^ (-n : ℝ) : ℝ) ∈ approx (x.iter_sqrt n) := by
+lemma Interval.approx_iter_sqrt {a : ℝ} {x : Interval} {n : ℕ} (ax : approx x a) :
+    approx (x.iter_sqrt n) (a ^ (2 ^ (-n : ℝ) : ℝ)) := by
   rw [iter_sqrt]
   by_cases a0 : a ≤ 0
-  · simp only [log_nonpos a0 ax, nan_scaleB', exp_nan, approx_nan, mem_univ]
+  · simp only [log_nonpos a0 ax, nan_scaleB', exp_nan, approx_nan]
   · rw [Real.rpow_def_of_pos (not_le.mp a0)]
     approx
 
 /-- `Interval.iter_sqrt` is conservative, more inferable version -/
 @[approx] lemma Interval.mem_approx_iter_sqrt' {a : ℝ} {x : Interval} {n : ℕ}
-    (a0 : 0 ≤ a) (ax : a^(2^n) ∈ approx x) : a ∈ approx (x.iter_sqrt n) := by
+    (a0 : 0 ≤ a) (ax : approx x (a ^ (2^n))) : approx (x.iter_sqrt n) a := by
   generalize hb : a^(2^n) = b at ax
   have ab : a = b ^ (2 ^ (-n : ℝ) : ℝ) := by
     have e : (2:ℝ)^n = (2^n : ℕ) := by norm_num
     rw [← hb, Real.rpow_neg (by norm_num), Real.rpow_natCast, e,
       Real.pow_rpow_inv_natCast a0 (pow_ne_zero _ (by norm_num))]
   rw [ab]
-  exact mem_approx_iter_sqrt ax
+  exact approx_iter_sqrt ax
 
 /-- `potential_small` covers all small values -/
 lemma Box.approx_potential_small {c' z' : ℂ} (c4 : ‖c'‖ ≤ 4) (z4 : ‖z'‖ ≤ 4) :
-    (superF 2).potential c' z' ∈ approx potential_small := by
-  have ss : Icc 0.216 1 ⊆ approx potential_small := by
-    rw [potential_small]
-    apply Icc_subset_approx
-    · exact Interval.approx_union_left (Interval.approx_ofScientific _ _ _)
-    · exact Interval.approx_union_right Interval.mem_approx_one
-  refine ss ⟨?_, ?_⟩
-  · exact le_potential c4 z4
-  · apply Super.potential_le_one
+    approx potential_small ((superF 2).potential c' z') := by
+  rw [potential_small]
+  apply approx_of_mem_Icc (a := 0.216) (c := 1)
+  · exact Interval.approx_union_left (Interval.approx_ofScientific _ _ _)
+  · exact Interval.approx_union_right approx_one
+  · constructor
+    · exact le_potential c4 z4
+    · apply Super.potential_le_one
 
 /-- `potential_large` covers all large values -/
 lemma Box.approx_potential_large {c' z' : ℂ} {z : Box} (cz : ‖c'‖ ≤ ‖z'‖) (z6 : 6 ≤ ‖z'‖)
-    (zm : z' ∈ approx z) : (superF 2).potential c' z' ∈ approx (potential_large z) := by
+    (zm : approx z z') : approx (potential_large z) ((superF 2).potential c' z') := by
   rw [potential_large]
   apply Interval.approx_grow (potential_approx 2 (le_trans (by norm_num) z6) cz)
   · intro n
@@ -67,20 +66,20 @@ lemma Box.approx_potential_large {c' z' : ℂ} {z : Box} (cz : ‖c'‖ ≤ ‖z
 
 /-- `Box.potential` is conservative -/
 @[approx] lemma Box.mem_approx_potential {c' z' : ℂ} {c z : Box}
-    (cm : c' ∈ approx c) (zm : z' ∈ approx z) (n : ℕ) (r : Floating) :
-    (superF 2).potential c' z' ∈ approx (Box.potential c z n r).1 := by
+    (cm : approx c c') (zm : approx z z') (n : ℕ) (r : Floating) :
+    approx (Box.potential c z n r).1 ((superF 2).potential c' z') := by
   set s := superF 2
   unfold Box.potential
   generalize hcs : (normSq c).hi = cs
   generalize hi : iterate c z (cs.max 9) n = i
   by_cases csn : cs = nan
-  · simp only [csn, Floating.nan_max, iterate_nan, Interval.approx_nan, mem_univ]
+  · simp only [csn, Floating.nan_max, iterate_nan, approx_nan]
   simp only [hi, Interval.hi_eq_nan, Floating.val_lt_val]
   generalize hie : i.exit = ie
   induction ie
   · generalize hzs : (normSq i.z) = zs
     by_cases bad : zs = nan ∨ (16 : Floating).val < zs.hi.val ∨ (16 : Floating).val < cs.val
-    · simp only [bad, ↓reduceIte, Interval.approx_nan, mem_univ]
+    · simp only [bad, ↓reduceIte, approx_nan]
     · simp only [bad, ↓reduceIte]
       simp only [not_or, not_lt, ← hzs] at bad
       rcases bad with ⟨zsn, z4, c4⟩
@@ -99,13 +98,13 @@ lemma Box.approx_potential_large {c' z' : ℂ} {z : Box} (cz : ‖c'‖ ≤ ‖z
     simp only
     generalize hje : j.exit = je
     induction je
-    · simp only [Interval.approx_nan, mem_univ]
+    · simp only [approx_nan]
     · simp only
       generalize hn : i.n + j.n = n
       apply Interval.mem_approx_iter_sqrt' s.potential_nonneg
       simp only [← s.potential_eqn_iter, f_f'_iter, ←hj] at hje ⊢
       generalize hw' : (f' 2 c')^[n] z' = w'
-      have izm : (f' 2 c')^[i.n] z' ∈ approx i.z := by rw [← hi]; exact mem_approx_iterate cm zm _
+      have izm : approx i.z ((f' 2 c')^[i.n] z') := by rw [← hi]; exact mem_approx_iterate cm zm _
       have jl := iterate_large cm izm hje
       have jrn := ne_nan_of_iterate (hje.trans_ne (by decide))
       simp only [hj, ← Function.iterate_add_apply, add_comm _ i.n, hn, hw'] at jl
@@ -123,12 +122,12 @@ lemma Box.approx_potential_large {c' z' : ℂ} {z : Box} (cz : ‖c'‖ ≤ ‖z
         · simp only [norm_nonneg, Real.sqrt_sq, le_refl]
       · rw [← hw', ←hn, add_comm _ j.n, Function.iterate_add_apply, ←hj]
         exact mem_approx_iterate cm izm _
-    · simp only [Interval.approx_nan, mem_univ]
-  · simp only [Interval.approx_nan, mem_univ]
+    · simp only [approx_nan]
+  · simp only [approx_nan]
 
 /-- `Box.potential` is conservative, diagonal version -/
-@[approx] lemma Box.mem_approx_potential' {c' : ℂ} {c : Box} (cm : c' ∈ approx c) (n : ℕ)
-    (r : Floating) : _root_.potential 2 c' ∈ approx (Box.potential c c n r).1 := by
+@[approx] lemma Box.mem_approx_potential' {c' : ℂ} {c : Box} (cm : approx c c') (n : ℕ)
+    (r : Floating) : approx (Box.potential c c n r).1 (_root_.potential 2 c') := by
   simp only [_root_.potential, RiemannSphere.fill_coe, mem_approx_potential cm cm]
 
 /-!

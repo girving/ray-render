@@ -15,10 +15,10 @@ private local instance : Fact (2 ≤ 2) := ⟨by norm_num⟩
 
 /-- All correctness properties of `iterate'` in a single lemma -/
 lemma iterate'_correct {c z : Box} {rs : Floating} {c' z' : ℂ} {rs' : ℝ}
-    (cm : c' ∈ approx c) (zm : z' ∈ approx z) (rsm : rs' ≤ rs.val) (k n : ℕ) :
+    (cm : approx c c') (zm : approx z z') (rsm : rs' ≤ rs.val) (k n : ℕ) :
     let i := iterate' c z rs k n
     let w' := (f' 2 c')^[i.n - k] z'
-    k ≤ i.n ∧ w' ∈ approx i.z ∧ (i.exit = .large → rs' < ‖w'‖ ^ 2) := by
+    k ≤ i.n ∧ approx i.z w' ∧ (i.exit = .large → rs' < ‖w'‖ ^ 2) := by
   induction' n with n h generalizing k z z'
   · simpa only [iterate', le_refl, tsub_eq_zero_of_le, Function.iterate_zero, id_eq, reduceCtorEq,
       false_implies, and_true, true_and]
@@ -28,7 +28,7 @@ lemma iterate'_correct {c z : Box} {rs : Floating} {c' z' : ℂ} {rs' : ℝ}
     generalize hz2 : zr2.lo.add zi2.lo false = z2
     generalize hw : (⟨zr2 - zi2, (z.re * z.im).scaleB 1⟩ : Box) + c = w
     have we : w = z.sqr + c := by rw [← hw, Box.sqr, hzr2, hzi2]
-    have wa : f' 2 c' z' ∈ approx w := by rw [we, f']; approx
+    have wa : approx w (f' 2 c' z') := by rw [we, f']; approx
     generalize hw' : f' 2 c' z' = w' at wa
     by_cases z2n : z2 = nan
     · simpa only [z2n, ↓reduceIte, le_refl, tsub_eq_zero_of_le, Function.iterate_zero, id_eq,
@@ -55,8 +55,8 @@ lemma iterate'_correct {c z : Box} {rs : Floating} {c' z' : ℂ} {rs' : ℝ}
 
 /-- `iterate` produces a correct iterate -/
 @[approx] lemma mem_approx_iterate {c z : Box} {rs : Floating} {c' z' : ℂ}
-    (cm : c' ∈ approx c) (zm : z' ∈ approx z) (n : ℕ) :
-    (f' 2 c')^[(iterate c z rs n).n] z' ∈ approx (iterate c z rs n).z := by
+    (cm : approx c c') (zm : approx z z') (n : ℕ) :
+    approx (iterate c z rs n).z ((f' 2 c')^[(iterate c z rs n).n] z') := by
   rw [iterate]
   by_cases rsn : rs = nan
   · simpa only [rsn, ite_true, Function.iterate_zero, id_eq]
@@ -65,7 +65,7 @@ lemma iterate'_correct {c z : Box} {rs : Floating} {c' z' : ℂ} {rs' : ℝ}
 
 /-- If `iterate` claims the result is large, it is` -/
 lemma iterate_large {c z : Box} {rs : Floating} {n : ℕ} {c' z' : ℂ}
-    (cm : c' ∈ approx c) (zm : z' ∈ approx z) (l : (iterate c z rs n).exit = .large) :
+    (cm : approx c c') (zm : approx z z') (l : (iterate c z rs n).exit = .large) :
     rs.val < ‖(f' 2 c')^[(iterate c z rs n).n] z'‖ ^ 2 := by
   rw [iterate] at l ⊢
   by_cases rsn : rs = nan

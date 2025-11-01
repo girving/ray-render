@@ -122,58 +122,61 @@ instance : Nan (Color UInt8) where
 noncomputable def UInt8.color (v : UInt8) : ℝ :=
   (v.toNat + 1/2) / 256
 
-@[irreducible] def UInt8.approx' (v : UInt8) : Set ℝ :=
+@[irreducible] def UInt8.approx' (v : UInt8) (v' : ℝ) : Prop :=
   let c : ℝ := v.color
   let e := color_error / 2
-  Icc (c - e) (c + e)
+  v' ∈ Icc (c - e) (c + e)
 
 /-- Approximation interval around a color channel, of width `color_error` -/
 instance : Approx UInt8 ℝ where
-  approx v := v.approx'
+  approx v v' := v.approx' v'
 
-lemma UInt8.approx_def (v : UInt8) : Approx.approx v =
+lemma UInt8.approx_def (v : UInt8) (v' : ℝ) : Approx.approx v v' ↔
     let c : ℝ := v.color
     let e := color_error / 2
-    Icc (c - e) (c + e) := by
+    v' ∈ Icc (c - e) (c + e) := by
   simp only [Approx.approx]
   rw [approx']
 
 /-- Componentwise approximation for `Color` -/
-@[irreducible] def Color.approx' [Approx α β] (c : Color α) : Set (Color β) :=
-  {e : Color β | e.r ∈ approx c.r ∧ e.g ∈ approx c.g ∧ e.b ∈ approx c.b ∧ e.a ∈ approx c.a}
+@[irreducible] def Color.approx' [Approx α β] (c : Color α) (c' : Color β) : Prop :=
+  approx c.r c'.r ∧ approx c.g c'.g ∧ approx c.b c'.b ∧ approx c.a c'.a
 
 /-- `Color α` approximates componentwise, after a single nan -/
 instance : Approx (Color UInt8) (Color ℝ) where
-  approx c := if c = nan then univ else c.approx'
+  approx c c' := c = nan ∨ Color.approx' c c'
 
-lemma Color.approx_uint8_def (c : Color UInt8) :
-    approx c = if c = nan then univ else {e : Color ℝ |
-      e.r ∈ approx c.r ∧ e.g ∈ approx c.g ∧ e.b ∈ approx c.b ∧ e.a ∈ approx c.a} := by
+lemma Color.approx_uint8_def (c : Color UInt8) (c' : Color ℝ) :
+    approx c c' ↔ c = nan ∨
+      approx c.r c'.r ∧ approx c.g c'.g ∧ approx c.b c'.b ∧ approx c.a c'.a := by
   simp only [Approx.approx]
   rw [approx']
   simp only [Approx.approx]
 
-@[simp] lemma Color.approx_nan : approx (nan : Color UInt8) = univ := rfl
+instance : ApproxNan (Color UInt8) (Color ℝ) where
+  approx_nan := by
+    intro c
+    simp only [approx, true_or]
 
 /-- `Color Interval` approximates purely componentwise -/
 instance : Approx (Color Interval) (Color ℝ) where
   approx c := c.approx'
 
-lemma Color.approx_interval_def (c : Color Interval) :
-    approx c = {e : Color ℝ |
-      e.r ∈ approx c.r ∧ e.g ∈ approx c.g ∧ e.b ∈ approx c.b ∧ e.a ∈ approx c.a} := by
+lemma Color.approx_interval_def (c : Color Interval) (c' : Color ℝ) :
+    approx c c' ↔
+      approx c.r c'.r ∧ approx c.g c'.g ∧ approx c.b c'.b ∧ approx c.a c'.a := by
   simp only [Approx.approx]
   rw [approx']
   simp only [Approx.approx]
 
 /-- Send `none` to `univ` -/
 instance : Approx (Option UInt8) ℝ where
-  approx v := match v with
-    | none => univ
-    | some v => approx v
+  approx v v' := match v with
+    | none => True
+    | some v => approx v v'
 
-@[simp] lemma approx_none : approx (none : Option UInt8) = univ := rfl
-@[simp] lemma approx_some (v : UInt8) : approx (some v) = approx v := rfl
+@[simp] lemma approx_none {v' : ℝ} : approx (none : Option UInt8) v' := by simp only [approx]
+@[simp] lemma approx_some (v : UInt8) {v' : ℝ} : approx (some v) v' = approx v v' := rfl
 
 /-- Roughly what `Color ℝ` a `Color UInt8` corresponds to -/
 noncomputable def Color.val (c : Color UInt8) : Color ℝ :=
@@ -214,8 +217,8 @@ noncomputable def Color.val (c : Color UInt8) : Color ℝ :=
   Floating.val_ofNat' (lt_trans v.toNat_lt (by norm_num))
 
 /-- `Interval.quantize` is conservative -/
-@[approx] lemma Interval.mem_approx_quantize {x' : ℝ} {x : Interval} (xm : x' ∈ approx x) :
-    x' ∈ approx x.quantize := by
+@[approx] lemma Interval.mem_approx_quantize {x' : ℝ} {x : Interval} (xm : approx x x') :
+    approx x.quantize x' := by
   rw [quantize]
   generalize hc : x.untrusted_quantize = c
   generalize hl : c.unquantize.sub half_color_error.lo true = lo
@@ -234,19 +237,20 @@ noncomputable def Color.val (c : Color UInt8) : Color ℝ :=
       exact Floating.nan_lt n0
     simp only [g, and_self, ↓reduceIte, UInt8.approx_def, approx_some]
     simp only [Rat.cast_div, Rat.cast_ofNat, mem_Icc, tsub_le_iff_right, UInt8.color, add_div]
-    simp only [approx, lo_eq_nan, xn, ↓reduceIte, mem_Icc] at xm
+    simp only [approx, lo_eq_nan, xn, false_or] at xm
     have e : half_color_error.lo.val ≤ color_error / 2 := by
       rw [half_color_error]
       apply lo_le (by native_decide)
       have e : (color_error : ℝ) / 2 = (color_error / 2 : ℚ) := by
         simp only [Rat.cast_div, Rat.cast_ofNat]
-      rw [e]; approx
+      rw [e]
+      apply approx_ratCast
     simp only [← hl, ←hh] at n0 n1 mn g
     have le_lo := Floating.le_sub n0
     have le_hi := Floating.add_le n1
     simp only [UInt8.val_unquantize mn, tsub_le_iff_right, hl, hh] at le_lo le_hi g ⊢
     exact ⟨by linarith, by linarith⟩
-  · simp only [g, ↓reduceIte, approx_none, mem_univ]
+  · simp only [g, ↓reduceIte, approx_none]
 
 /-- Turn an `Interval` color into a `UInt8` color -/
 @[irreducible] def Color.quantize (c : Color Interval) : Color UInt8 :=
@@ -255,31 +259,31 @@ noncomputable def Color.val (c : Color UInt8) : Color ℝ :=
   | _ => nan
 
 /-- `Color.quantize` is conservative -/
-@[approx] lemma Color.mem_approx_quantize {c' : Color ℝ} {c : Color Interval} (cm : c' ∈ approx c) :
-    c' ∈ approx c.quantize := by
+@[approx] lemma Color.mem_approx_quantize {c' : Color ℝ} {c : Color Interval} (cm : approx c c') :
+    approx c.quantize c' := by
   unfold quantize
   generalize hr : c.r.quantize = r
   generalize hg : c.g.quantize = g
   generalize hb : c.b.quantize = b
   generalize ha : c.a.quantize = a
   match r with
-  | none => simp only [approx_nan, mem_univ]
+  | none => simp only [approx_nan]
   | some r =>
     match g with
-    | none => simp only [approx_nan, mem_univ]
+    | none => simp only [approx_nan]
     | some g =>
     match b with
-    | none => simp only [approx_nan, mem_univ]
+    | none => simp only [approx_nan]
     | some b =>
       match a with
-      | none => simp only [approx_nan, mem_univ]
+      | none => simp only [approx_nan]
       | some a =>
-        simp only [approx, mem_ite_univ_left]
-        intro _
-        simp only [approx] at cm; simp only [approx', mem_setOf_eq] at cm
+        simp only [approx]
+        right
+        simp only [approx] at cm; simp only [approx'] at cm
         rcases cm with ⟨m0, m1, m2, m3⟩
-        simp only [approx', mem_setOf_eq, ← approx_some, ←hr, ←hg, ←hb, ←ha,
-          Interval.mem_approx_quantize, m0, m1, m2, m3, true_and]
+        simp only [approx', ← approx_some, ← hr, ← hg, ← hb, ← ha, Interval.mem_approx_quantize, m0,
+          m1, m2, m3, true_and]
 
 /-!
 ### Color construction utilities
@@ -306,61 +310,53 @@ variable [Approx α α'] [Approx β β']
 
 /-- `neg` approximates itself, for `Interval` and `ℝ` -/
 noncomputable instance : ApproxNeg (Color Interval) (Color ℝ) where
-  approx_neg x := by
-    intro a m
-    simp only [mem_neg] at m
-    simpa only [Color.approx_interval_def, Color.neg_def, mem_setOf_eq, Interval.approx_neg,
-      mem_neg] using m
+  approx_neg := by
+    intro x x' a
+    simp only [Color.approx_interval_def, Color.neg_def, Interval.approx_neg, neg_neg] at a ⊢
+    approx
 
 /-- `+` approximates itself, for `Interval` and `ℝ` -/
 noncomputable instance : ApproxAdd (Color Interval) (Color ℝ) where
-  approx_add x y := by
-    intro a m
-    simp only [mem_add] at m
-    rcases m with ⟨x',xm,y',ym,e⟩
-    simp only [Color.add_def, approx, ← e] at xm ym ⊢
-    simp only [Color.approx', mem_setOf_eq] at xm ym ⊢
-    rcases xm with ⟨x0, x1, x2, x3⟩
-    rcases ym with ⟨y0, y1, y2, y3⟩
-    refine ⟨?_, ?_, ?_, ?_⟩
-    all_goals exact mem_approx_add (by assumption) (by assumption)
+  approx_add := by
+    intro x y x' y' ax ay
+    simp only [Color.add_def, approx] at ax ay ⊢
+    simp only [Color.approx'] at ax ay ⊢
+    approx
 
 /-- `-` approximates itself, for `Interval` and `ℝ` -/
 noncomputable instance : ApproxSub (Color Interval) (Color ℝ) where
-  approx_sub x y := by
-    intro a m
-    simp only [mem_sub] at m
-    rcases m with ⟨x',xm,y',ym,e⟩
-    simp only [Color.sub_def, approx, ← e] at xm ym ⊢
-    simp only [Color.approx', mem_setOf_eq] at xm ym ⊢
-    rcases xm with ⟨x0, x1, x2, x3⟩
-    rcases ym with ⟨y0, y1, y2, y3⟩
-    refine ⟨?_, ?_, ?_, ?_⟩
-    all_goals exact mem_approx_sub (by assumption) (by assumption)
+  approx_sub := by
+    intro x y x' y' ax ay
+    simp only [Color.sub_def, approx] at ax ay ⊢
+    simp only [Color.approx'] at ax ay ⊢
+    approx
+
+instance : ApproxZero (Color Interval) (Color ℝ) where
+  approx_zero := by simp [approx, Color.approx', Color.zero_def]
 
 noncomputable instance : ApproxAddGroup (Color Interval) (Color ℝ) where
 
 /-- `•` approximates itself, for `Interval` and `ℝ` -/
 noncomputable instance : ApproxSMul Interval (Color Interval) ℝ (Color ℝ) where
-  mem_approx_smul {s' x' s x} sm xm := by
+  approx_smul {s' x' s x} sm xm := by
     simp only [Color.smul_def, smul_eq_mul, approx] at xm ⊢
-    simp only [Color.approx', mem_setOf_eq] at xm ⊢
+    simp only [Color.approx'] at xm ⊢
     rcases xm with ⟨m0, m1, m2, m3⟩
     refine ⟨?_, ?_, ?_, ?_⟩
-    all_goals exact mem_approx_mul (by assumption) (by assumption)
+    all_goals exact approx_mul (by assumption) (by assumption)
 
 /-- `lerp` approximates itself -/
 @[approx] lemma mem_approx_lerp [Add β] [Sub β] [AddGroup β'] [SMul α β] [SMul α' β']
     [ApproxAdd β β'] [ApproxSub β β'] [ApproxSMul α β α' β']
     {t' : α'} {x' y' : β'} {t : α} {x y : β}
-    (tm : t' ∈ approx t) (xm : x' ∈ approx x) (ym : y' ∈ approx y) :
-    lerp t' x' y' ∈ approx (lerp t x y) := by
+    (tm : approx t t') (xm : approx x x') (ym : approx y y') :
+    approx (lerp t x y) (lerp t' x' y') := by
   rw [lerp, lerp]
   approx
 
 /-- `Color.ofRat` is conservative -/
-@[approx] lemma Color.mem_approx_ofRat {c : Color ℚ} : ↑c ∈ approx (Color.ofRat c) := by
+@[approx] lemma Color.mem_approx_ofRat {c : Color ℚ} : approx (Color.ofRat c) (c : Color ℝ) := by
   simp only [coe, approx, ofRat, map]
-  simp only [approx', mem_setOf_eq]
+  simp only [approx']
   refine ⟨?_, ?_, ?_, ?_⟩
-  all_goals apply Interval.approx_ofRat
+  all_goals apply approx_ratCast

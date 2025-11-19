@@ -76,7 +76,7 @@ lemma push_colors_succ {f : ℕ → Color UInt8} {n o : ℕ} {d : ByteArray} :
       let c := f o
       push_colors f n (o+1) ((((d.push c.r).push c.g).push c.b).push c.a) := by
   rw [push_colors]
-  simp only [Nat.add_eq_zero, one_ne_zero, and_false, ↓reduceIte, add_tsub_cancel_right]
+  simp only [Nat.add_eq_zero_iff, one_ne_zero, and_false, ↓reduceIte, add_tsub_cancel_right]
 
 /-- `push_colors` has the right size -/
 @[simp] lemma size_push_colors (f : ℕ → Color UInt8) (n o : ℕ) (d : ByteArray) :

@@ -9,7 +9,7 @@ package render where
   ]
 
 require "leanprover-community" / "mathlib" @ git "master"
-require "girving" / "interval" @ git "broken"
+require "girving" / "interval" @ git "main"
 require "girving" / "ray" @ git "main"
 
 @[default_target]

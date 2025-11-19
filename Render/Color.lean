@@ -232,7 +232,6 @@ noncomputable def Color.val (c : Color UInt8) : Color ℝ :=
   by_cases g : lo.val ≤ x.lo.val ∧ x.hi.val ≤ hi.val
   · have xn : x ≠ nan := by
       contrapose g
-      simp only [ne_eq, not_not] at g
       simp only [g, lo_nan, hi_nan, Floating.val_nan_le, and_true, not_le, ← Floating.val_lt_val]
       exact Floating.nan_lt n0
     simp only [g, and_self, ↓reduceIte, UInt8.approx_def, approx_some]

@@ -36,7 +36,7 @@ This is 'bad' because we're not doing a Koebe quarter theorem-type evaluation th
 
 /-- `potential_image'` is conservative -/
 lemma approx_bad_potential_image {c : ℚ × ℚ} {n : ℕ} {r : Floating} :
-    potential_image c ∈ approx (bad_potential_image n r c) := by
+    approx (bad_potential_image n r c) (potential_image c) := by
   rw [potential_image, bad_potential_image]
   have e : ∀ p : ℝ, p^16 = (((p^2)^2)^2)^2 := by intro p; simp only [← pow_mul]
   rw [outside', clear', e]

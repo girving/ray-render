@@ -80,5 +80,5 @@ lemma iterate_large {c z : Box} {rs : Floating} {n : ℕ} {c' z' : ℂ}
 /-- Iterate exits with `.nan` when `rs = nan` -/
 @[simp] lemma ne_nan_of_iterate {c z : Box} {rs : Floating} {n : ℕ}
     (e : (iterate c z rs n).exit ≠ .nan) : rs ≠ nan := by
-  contrapose e; simp only [ne_eq, not_not] at e
-  simp only [e, iterate_nan, ne_eq, not_true_eq_false, not_false_eq_true]
+  contrapose e
+  simp only [e, iterate_nan]

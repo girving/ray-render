@@ -5,7 +5,7 @@
    "type": "git",
    "subDir": null,
    "scope": "girving",
-   "rev": "54f88246fb9a35ebabd133599ccff1ccd8404212",
+   "rev": "dd587e5d34dc3baa45ad516ee1c53a03c8d8d16c",
    "name": "ray",
    "manifestFile": "lake-manifest.json",
    "inputRev": "main",

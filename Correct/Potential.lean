@@ -1,4 +1,5 @@
 import Correct.Iterate
+import Ray.Dynamics.Multibrot.Potential
 import Ray.Dynamics.Multibrot.PotentialLower
 import Render.Potential
 

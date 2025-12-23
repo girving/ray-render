@@ -1,4 +1,4 @@
-import Ray.Dynamics.Mandelbrot
+import Ray.Mandelbrot
 import Render.Iterate
 
 /-!

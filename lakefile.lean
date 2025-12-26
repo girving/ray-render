@@ -7,6 +7,7 @@ package render where
     ⟨`linter.docPrime, false⟩,
     ⟨`autoImplicit, false⟩
   ]
+  testDriver := "RenderTest"
 
 require "leanprover-community" / "mathlib" @ git "master"
 require "girving" / "interval" @ git "main"
@@ -17,6 +18,10 @@ lean_lib Render
 
 @[default_target]
 lean_lib Correct
+
+@[default_target]
+lean_lib RenderTest where
+  globs := #[.submodules `test]
 
 def run (cmd : String) (args : Array String) (cwd : Option System.FilePath := none) : IO Unit := do
   let _ ← IO.Process.output { cmd := cmd, args := args, cwd := cwd }

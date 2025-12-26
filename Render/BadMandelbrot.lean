@@ -8,7 +8,7 @@ import Render.Potential
 ## Bad Mandelbrot images where each pixel corresponds to just one point
 
 This is a warmup: our real images will have each pixel corresponding to an integral
-over a square, partitioning the plain.  But these we can draw without the Koebe quarter theorem.
+over a square, partitioning the plane.  But these we can draw without the Koebe quarter theorem.
 -/
 
 -- Verify that we haven't pulled in `Ray` machinery
@@ -23,9 +23,9 @@ def worse_potential_image (n : ℕ) (r : Floating) (c : ℚ × ℚ) : Color UInt
   let c := Box.ofRat c
   let p := c.potential c n r
   match p with
-    | (_, .nan) => nan
-    | (_, .small) => inside'.quantize
-    | (p, .large) => (lerp p.sqr.sqr.sqr.sqr clear' outside').quantize
+    | ⟨_, .nan⟩ => nan
+    | ⟨_, .small⟩ => inside'.quantize
+    | ⟨p, .large⟩ => (lerp p.sqr.sqr.sqr.sqr clear' outside').quantize
 
 def main : IO Unit := do
   let f := worse_potential_image (n := 50) (r := 1000)

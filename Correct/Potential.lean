@@ -93,7 +93,7 @@ lemma Box.approx_potential_deriv_large (le : max 10 (√3 * ‖c'‖) ≤ ‖z'�
     approx (potential_deriv_large c z dc dz).2 (_root_.potential_deriv c' z' dc' dz') := by
   set s := superF 2
   simp only [potential_deriv_large]
-  refine Interval.approx_grow (fderiv_bottcher_approx le) ?_ (by approx)
+  refine Interval.approx_grow (potential_deriv_approx le) ?_ (by approx)
   intro n
   rw [Ne, Interval.hi_eq_nan] at n
   apply Interval.le_hi n

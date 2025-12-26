@@ -230,7 +230,7 @@ lemma potential_deriv_eq_fderiv (m : (c, ↑z) ∈ (superF 2).post) :
   simp [bottcher_deriv_iter, fderiv_snd, bottcher_deriv_pow]
 
 /-- `potential_deriv` satisfies a nice iteration equation -/
-noncomputable def potential_deriv_eqn (m : (c, ↑z) ∈ (superF 2).basin) (n : ℕ) :
+lemma potential_deriv_eqn (m : (c, ↑z) ∈ (superF 2).basin) (n : ℕ) :
     potential_deriv c z dc dz =
       bottcher_deriv_pow n ((superF 2).potential c z ^ 2 ^ n) *
       potential_deriv c ((f' 2 c)^[n] z) dc
@@ -245,7 +245,8 @@ noncomputable def potential_deriv_eqn (m : (c, ↑z) ∈ (superF 2).basin) (n : 
     ← f_f'_iter, s.potential_eqn_iter, ← pow_mul, ← pow_add, ← mul_assoc, add_comm n]
   rw [bottcher_deriv_pow_add (by bound), ← fderiv_iterate_add, ← Function.iterate_add_apply]
 
-lemma fderiv_bottcher_approx (le : max 10 (√3 * ‖c‖) ≤ ‖z‖) :
+/-- Error bound on `potential_deriv`, accounting for errors due to both `dc` and `dz` -/
+lemma potential_deriv_approx (le : max 10 (√3 * ‖c‖) ≤ ‖z‖) :
     |potential_deriv c z dc dz - (‖z‖ ^ 2)⁻¹ * ‖dz‖| ≤
       ‖z‖⁻¹ * (0.943 / (‖z‖ ^ 2 - ‖c‖ ^ 2) * ‖dc‖ + 2.45 / ‖z‖ ^ 2 * ‖dz‖) := by
   set s := superF 2

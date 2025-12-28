@@ -221,12 +221,6 @@ lemma Box.approx_potential_deriv (cm : approx c c') (zm : approx z z') (dcm : ap
 
 /-- `Box.potential_deriv` is conservative, diagonal version -/
 @[approx] lemma Box.approx_potential_deriv_p' (cm : approx c c') (n : ℕ) (r : Floating) :
-    approx (Box.potential_deriv c c dc dc n r).p (_root_.potential 2 c') := by
+    approx (Box.potential_deriv c c dc dz n r).p (_root_.potential 2 c') := by
   simp only [_root_.potential, RiemannSphere.fill_coe]
-  approx
-
-/-- `Box.potential_deriv` is conservative for derivatives, diagonal version -/
-@[approx] lemma Box.approx_potential_deriv_dp' (cm : approx c c') (dcm : approx dc dc') (n : ℕ)
-    (r : Floating) :
-    approx (Box.potential_deriv c c dc dc n r).dp (_root_.potential_deriv c' c' dc' dc') := by
   approx

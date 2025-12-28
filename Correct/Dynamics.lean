@@ -1,4 +1,5 @@
 import Correct.Calculus
+import Mathlib.Analysis.Calculus.Deriv.Basic
 import Ray.Dynamics.BottcherNearM
 import Ray.Dynamics.Postcritical
 import Ray.Multibrot.Basic
@@ -44,7 +45,7 @@ lemma fderiv_iterate_succ (n : ℕ) :
   · simp [fderiv_fst, fderiv_snd]
   all_goals fun_prop
 
-lemma differentiableAt_bottcher (m : (c, ↑z) ∈ (superF 2).post):
+@[fun_prop] lemma differentiableAt_bottcher (m : (c, ↑z) ∈ (superF 2).post):
     DifferentiableAt ℂ (fun p : ℂ × ℂ ↦ (superF 2).bottcher p.1 ↑p.2) (c, z) := by
   set s := superF 2
   refine (ContMDiffAt.analyticAt (I := II) (J := I) ?_).differentiableAt
@@ -192,7 +193,7 @@ lemma bottcher_deriv_iter_const {a b : ℕ} (ma : (c, (f 2 c)^[a] z) ∈ (superF
 
 /-- A notion of `‖deriv bottcher‖` that is meaningful throughout the basin. This works because the
 argument is ambiguous (due to the choice of branch cut), but the norm is not. -/
-noncomputable def potential_deriv (c z dc dz : ℂ) : ℝ :=
+noncomputable def potential_deriv (c : ℂ) (z : ℂ := c) (dc dz : ℂ := 1) : ℝ :=
   if h : (c, ↑z) ∈ (superF 2).basin ∧
     ∃ dp : ℝ, 0 ≤ dp ∧ ∀ᶠ n in atTop, dp = bottcher_deriv_iter c z dc dz n
   then choose h.2 else 0
@@ -272,3 +273,14 @@ lemma potential_deriv_approx (le : max 10 (√3 * ‖c‖) ≤ ‖z‖) :
     exact mul_le_mul_of_nonneg_right (deriv_sbottcher_c_approx lt2) (by bound)
   · simp only [← add_mul, norm_mul, sub_neg_eq_add]
     exact mul_le_mul_of_nonneg_right (deriv_sbottcher_z_approx le1) (by bound)
+
+/-- `potential_deriv c` is the diagonal `bottcher` derivative -/
+lemma potential_deriv_eq_deriv (m : c ∉ multibrot 2) :
+    potential_deriv c = ‖deriv (bottcher' 2) c‖ := by
+  set s := superF 2
+  have e : bottcher' 2 = (fun p : ℂ × ℂ ↦ s.bottcher p.1 p.2) ∘ (fun c ↦ (c,c)) := rfl
+  have p := multibrotPost m
+  rw [potential_deriv_eq_fderiv p, e, ← fderiv_deriv, fderiv_comp, DifferentiableAt.fderiv_prodMk]
+  · simp only [fderiv_id', ContinuousLinearMap.coe_comp', Function.comp_apply,
+      ContinuousLinearMap.prod_apply, ContinuousLinearMap.coe_id', id_eq]
+  all_goals fun_prop (disch := assumption)

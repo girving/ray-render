@@ -39,9 +39,6 @@ We then finish with
 See `Correct.Potential` for correctness proofs.
 -/
 
-open Real (log)
-open Set
-
 /-!
 ### Potential approximation routines
 -/
@@ -134,7 +131,8 @@ def DPotential.potential (p : DPotential) : Potential := ⟨p.p, p.m⟩
 
 /-- Approximate the Mandelbrot potential function and its derivative at any point.
     We also return the exit mode from our iteration. -/
-@[irreducible] def Box.potential_deriv (c z dc dz : Box) (n : ℕ) (r : Floating) : DPotential :=
+@[irreducible] def Box.potential_deriv (c : Box) (z : Box := c) (dc dz : Box := 1) (n : ℕ)
+    (r : Floating) : DPotential :=
   let cs := c.normSq.hi
   let i := iterate_deriv c z dc dz (cs.max 9) n
   match i.exit with

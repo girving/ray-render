@@ -1,3 +1,4 @@
+import Render.Area
 import Render.Grid
 import Render.Mandelbrot
 import Render.Image

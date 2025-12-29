@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 open MeasureTheory (ae volume)
 open Metric (ball)
 open Set
+open scoped ComplexConjugate
 
 variable {c : ℂ} {s r : ℝ}
 
@@ -30,6 +31,9 @@ lemma isOpen_osquare : IsOpen (osquare c s) := by
   simp only [osquare, ← max_lt_iff]
   simp only [← mem_Iio, ← preimage_setOf_eq, setOf_mem_eq]
   exact isOpen_Iio.preimage (by fun_prop)
+
+@[measurability] lemma measurableSet_csquare : MeasurableSet (csquare c s) :=
+  isClosed_csquare.measurableSet
 
 /-- The open square is inside the closed square -/
 lemma osquare_subset_csquare : osquare c s ⊆ csquare c s := by
@@ -125,3 +129,16 @@ lemma csquare_partition : csquare c s =
     · rintro (⟨h1, h2⟩ | ⟨h1, h2⟩) <;> constructor <;> linarith
   simp only [csquare, e, mem_setOf_eq, mem_union]
   lia
+
+/-- Squares are `conj` symmetric -/
+@[simp] lemma csquare_conj_symmetric {z : ℂ} : z ∈ csquare (conj c) s ↔ conj z ∈ csquare c s := by
+  simp [csquare, abs_le]
+  lia
+
+/-- Squares are `conj` symmetric -/
+lemma conj_csquare : conj '' csquare c s = csquare (conj c) s := by
+  ext z
+  have p : ∀ w, conj w = z ↔ w = conj z := by
+    intro
+    nth_rw 1 [← Complex.conj_conj z, (RingHom.injective _).eq_iff]
+  simp [p]

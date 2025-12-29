@@ -28,6 +28,7 @@ inductive Trace where
   | free : (x y s r : Dyadic) → Trace
   | split : (x y s r : Dyadic) → Trace → Trace → Trace → Trace → Trace
   | leafs : (x y s r : Dyadic) → Trace  -- Same as `split` with four implicit leaves
+  | top : Trace → Trace → Trace
 deriving Lean.ToJson
 
 def Trace.split' (x y s r : Dyadic) (t0 t1 t2 t3 : Trace) : Trace := match t0, t1, t2, t3 with
@@ -63,12 +64,20 @@ def upper_area_square_sample (x y s : Dyadic) (d n : ℕ) : Dyadic × Trace := m
     (a0 + a1 + a2 + a3, .split' x y s r t0 t1 t2 t3)
 
 /-- Upper bound the area of the Mandelbrot set -/
-@[irreducible] def upper_area (d n : ℕ) : Dyadic :=
-  upper_area_square 0 0 2 d n
+@[irreducible] def upper_area (d n : ℕ) : Dyadic := match d with
+  | 0 => 16  -- Have a base case so that we don't shift the meaning of `d`
+  | d + 1 =>
+    -- Use symmetry about the real axis
+    2 * (upper_area_square 1 1 1 d n + upper_area_square (-1) 1 1 d n)
 
 /-- Same as `upper_area`, but record the samples used -/
-@[irreducible] def upper_area_sample (d n : ℕ) : Dyadic × Trace :=
-  upper_area_square_sample 0 0 2 d n
+@[irreducible] def upper_area_sample (d n : ℕ) : Dyadic × Trace := match d with
+  | 0 => (16, .leaf)  -- Have a base case so that we don't shift the meaning of `d`
+  | d + 1 =>
+    -- Use symmetry about the real axis
+    let (a0, t0) := upper_area_square_sample 1 1 1 d n
+    let (a1, t1) := upper_area_square_sample (-1) 1 1 d n
+    (2 * (a0 + a1), .top t0 t1)
 
 /-!
 ### The trace versions are the same as the non-trace versions
@@ -85,4 +94,6 @@ variable {x y s : Dyadic} {d n : ℕ}
 
 @[simp] lemma fst_upper_area_sample :
     (upper_area_sample d n).1 = upper_area d n := by
-  simp only [upper_area_sample, fst_upper_area_square_sample, upper_area]
+  induction' d
+  · simp only [upper_area_sample, upper_area]
+  · simp only [upper_area_sample, fst_upper_area_square_sample, upper_area]

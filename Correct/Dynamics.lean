@@ -287,7 +287,8 @@ lemma potential_deriv_eq_deriv (m : c ∉ multibrot 2) :
   set s := superF 2
   have e : bottcher' 2 = (fun p : ℂ × ℂ ↦ s.bottcher p.1 p.2) ∘ (fun c ↦ (c,c)) := rfl
   have p := multibrotPost m
-  rw [potential_deriv_eq_fderiv p, e, ← fderiv_deriv, fderiv_comp, DifferentiableAt.fderiv_prodMk]
+  rw [potential_deriv_eq_fderiv p, e, ← fderiv_apply_one_eq_deriv, fderiv_comp,
+    DifferentiableAt.fderiv_prodMk]
   · simp only [fderiv_id', ContinuousLinearMap.coe_comp', Function.comp_apply,
       ContinuousLinearMap.prod_apply, ContinuousLinearMap.coe_id', id_eq]
   all_goals fun_prop (disch := assumption)

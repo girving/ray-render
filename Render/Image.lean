@@ -38,7 +38,7 @@ namespace Image
     base w h x y + 4 ≤ h * w * 4 := by
   rw [base]
   have hy : h - 1 - y ≤ h - 1 := by omega
-  refine le_trans (add_le_add_right (Nat.mul_le_mul_right _ (add_le_add (Nat.mul_le_mul_right _
+  refine le_trans (add_le_add_left (Nat.mul_le_mul_right _ (add_le_add (Nat.mul_le_mul_right _
     hy) (Nat.le_pred_of_lt xw))) _) ?_
   have le0 : 1 ≤ w := by omega
   have le1 : 1 ≤ h := by omega

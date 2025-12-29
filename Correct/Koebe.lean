@@ -80,6 +80,6 @@ public theorem bottcher_koebe (m : c ∉ multibrot 2) :
     · simp only [Function.comp_def, Function.comp_apply, eb.deriv_eq, deriv_mobius_zero z1, g]
     · exact (bottcher_analytic _ (g0 ▸ m)).differentiableAt
     · exact ((ga _ (Metric.mem_ball_self p0)).contDiffAt
-        (Metric.ball_mem_nhds _ p0)).differentiableAt le_top
+        (Metric.ball_mem_nhds _ p0)).differentiableAt (by decide)
   simpa only [g0, dg, dp, mul_div_assoc] using
     subset_trans (koebe_quarter' (f := g) (ga.analyticOnNhd isOpen_ball) inj) gsub

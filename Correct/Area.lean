@@ -96,8 +96,8 @@ lemma le_upper_area_square {x y s : Dyadic} {d n : ℕ} (s0 : 0 ≤ s) :
       have a4 : ∀ {a b c d a' b' c' d' : ℝ}, a ≤ a' → b ≤ b' → c ≤ c' → d ≤ d' →
           a + b + c + d ≤ a' + b' + c' + d' := by bound
       refine le_trans ?_ (a4 (up h0) (up h0) (up h0) (up h0))
-      refine le_trans ?_ (add_le_add_right (add_le_add_right (measureReal_union_le _ _) _) _)
-      refine le_trans ?_ (add_le_add_right (measureReal_union_le _ _) _)
+      refine le_trans ?_ (add_le_add_left (add_le_add_left (measureReal_union_le _ _) _) _)
+      refine le_trans ?_ (add_le_add_left (measureReal_union_le _ _) _)
       refine le_trans ?_ (measureReal_union_le _ _)
       refine measureReal_mono ?_
       simp only [← inter_union_distrib_left, Dyadic.toRat_add, Rat.cast_add, ← sub_eq_add_neg,

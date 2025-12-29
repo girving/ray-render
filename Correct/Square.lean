@@ -124,4 +124,4 @@ lemma csquare_partition : csquare c s =
     · intro ⟨h1, h2⟩; by_cases y ≤ 0 <;> [left; right] <;> constructor <;> linarith
     · rintro (⟨h1, h2⟩ | ⟨h1, h2⟩) <;> constructor <;> linarith
   simp only [csquare, e, mem_setOf_eq, mem_union]
-  cutsat
+  lia

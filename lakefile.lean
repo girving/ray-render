@@ -81,14 +81,19 @@ lean_exe gradient_test {
 
 @[default_target]
 lean_exe bad_mandelbrot {
-  root := `Render.BadMandelbrot
+  root := `bin.BadMandelbrot
   extraDepTargets := deps
   moreLinkArgs := linkArgs
 }
 
 @[default_target]
 lean_exe primes {
-  root := `Render.Primes
+  root := `bin.Primes
+}
+
+@[default_target]
+lean_exe area {
+  root := `bin.Area
 }
 
 target png.o pkg : System.FilePath := do

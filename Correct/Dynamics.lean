@@ -198,6 +198,13 @@ noncomputable def potential_deriv (c : ℂ) (z : ℂ := c) (dc dz : ℂ := 1) : 
     ∃ dp : ℝ, 0 ≤ dp ∧ ∀ᶠ n in atTop, dp = bottcher_deriv_iter c z dc dz n
   then choose h.2 else 0
 
+/-- `potential_deriv` is nonnegative -/
+@[simp, bound] lemma potential_deriv_nonneg : 0 ≤ potential_deriv c z dc dz := by
+  simp only [potential_deriv]
+  split_ifs with h
+  · exact (choose_spec h.2).1
+  · rfl
+
 /-- `potential_deriv` is meaningful throughout the basin -/
 lemma potential_deriv_prop (m : (c, ↑z) ∈ (superF 2).basin) :
     ∃ dp : ℝ, 0 ≤ dp ∧ ∀ᶠ n in atTop, dp = bottcher_deriv_iter c z dc dz n := by

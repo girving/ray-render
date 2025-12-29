@@ -16,6 +16,17 @@ The semantics of this render are that the color of each pixel is off by at most
 one in each coordinate, except for red pixels which can have arbitrary error.
 And there are only a few of those!
 
+## Area estimates
+
+We also use the Koebe quarter theorem for verified upper bounds on the area of
+the Mandelbrot set, following Fisher and Hill 1993. With `d = 12` we get
+
+$$\mu(M) \le 239397p-17 \approx 1.826454$$
+
+in 99 minutes. This is of course very far from SOTA: Fisher and Hill get 1.57012937,
+and [Thorsten Förstemann](https://www.foerstemann.name/labor/area/Mset_area_TE_2017.pdf)
+used similar methods to depth 26 to get $\mu(M) \le 1.53121$ in 550 hours.
+
 ## Building
 
 1. Install [`elan`](https://github.com/leanprover/elan) (`brew install elan-init` on Mac)
